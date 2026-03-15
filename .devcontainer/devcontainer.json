@@ -1,0 +1,11 @@
+{
+  "name": "Remote Browser",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "forwardPorts": [6080],
+  "portsAttributes": {
+    "6080": {
+      "label": "Browser",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
