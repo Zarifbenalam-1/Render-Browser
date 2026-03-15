@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y \
     x11vnc \
     novnc \
     websockify \
-    xauth \
     x11-utils \
+    xauth \
     ca-certificates \
     fonts-dejavu \
     procps \
