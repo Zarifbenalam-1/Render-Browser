@@ -3,13 +3,13 @@ FROM debian:12-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    firefox-esr \
+    chromium \
     xvfb \
     x11vnc \
     novnc \
     websockify \
-    openbox \
     xauth \
+    x11-utils \
     ca-certificates \
     fonts-dejavu \
     procps \
