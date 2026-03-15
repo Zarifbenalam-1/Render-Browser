@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
+# no strict exit - let background processes fail individually
 
 export DISPLAY=:1
 PORT="${PORT:-10000}"
 PASSWORD="${BROWSER_PASSWORD:-007}"
 
 mkdir -p "$HOME/.vnc"
-x11vnc -storepasswd "$PASSWORD" "$HOME/.vnc/passwd"
+x11vnc -storepasswd "$PASSWORD" "$HOME/.vnc/passwd" || true
 
-# Low resolution = less VRAM used by Xvfb
 Xvfb :1 -screen 0 1024x600x16 -ac &
-for i in $(seq 1 20); do
-  xdpyinfo -display :1 >/dev/null 2>&1 && break
-  sleep 1
-done
+sleep 3
 
 x11vnc \
   -display :1 \
@@ -21,11 +18,9 @@ x11vnc \
   -rfbauth "$HOME/.vnc/passwd" \
   -rfbport 5900 \
   -noxrecord -noxfixes -noxdamage \
-  -quiet \
-  &
-sleep 2
+  -quiet &
+sleep 3
 
-# Chromium with maximum memory reduction flags
 chromium \
   --display=:1 \
   --no-sandbox \
@@ -39,12 +34,11 @@ chromium \
   --disable-sync \
   --disable-translate \
   --disable-plugins \
-  --disable-hang-monitor \
-  --disable-prompt-on-repost \
-  --disable-client-side-phishing-detection \
   --renderer-process-limit=1 \
   --js-flags="--max-old-space-size=128" \
   --window-size=1024,600 \
   about:blank &
+
+sleep 2
 
 exec websockify --web=/usr/share/novnc/ "$PORT" localhost:5900
