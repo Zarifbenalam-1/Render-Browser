@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 export DISPLAY=:1
 PORT="${PORT:-10000}"
 PASSWORD="${BROWSER_PASSWORD:-changeme123}"
 
 mkdir -p "$HOME/.vnc"
-mkdir -p /tmp/.X11-unix || true
+x11vnc -storepasswd "$PASSWORD" "$HOME/.vnc/passwd"
 
-x11vnc -storepasswd "$PASSWORD" "$HOME/.vnc/passwd" >/dev/null
-
-Xvfb :1 -screen 0 1366x768x24 >/tmp/xvfb.log 2>&1 &
-sleep 2
-
-openbox >/tmp/openbox.log 2>&1 &
+Xvfb :1 -screen 0 1280x720x16 -ac &
+for i in $(seq 1 20); do
+  xdpyinfo -display :1 >/dev/null 2>&1 && break
+  sleep 1
+done
 
 x11vnc \
   -display :1 \
@@ -21,11 +19,19 @@ x11vnc \
   -shared \
   -rfbauth "$HOME/.vnc/passwd" \
   -rfbport 5900 \
-  -listen 127.0.0.1 \
-  >/tmp/x11vnc.log 2>&1 &
-
+  -noxrecord -noxfixes -noxdamage \
+  &
 sleep 2
 
-firefox-esr --display=:1 --no-remote --new-instance about:blank >/tmp/firefox.log 2>&1 &
+chromium \
+  --display=:1 \
+  --no-sandbox \
+  --disable-dev-shm-usage \
+  --disable-gpu \
+  --single-process \
+  --memory-pressure-off \
+  --max-old-space-size=200 \
+  --window-size=1280,720 \
+  about:blank &
 
 exec websockify --web=/usr/share/novnc/ "$PORT" localhost:5900
