@@ -1,11 +1,15 @@
+
+### `.devcontainer/devcontainer.json` — this makes it ONE CLICK
+```json
 {
   "name": "Remote Browser",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "forwardPorts": [6080],
   "portsAttributes": {
     "6080": {
-      "label": "Browser",
+      "label": "Remote Browser",
       "onAutoForward": "openBrowser"
     }
-  }
+  },
+  "postStartCommand": "bash start.sh"
 }
